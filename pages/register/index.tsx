@@ -3,13 +3,12 @@ import { isAxiosError } from 'axios';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    KeyboardAvoidingView,
-    Platform,
-    SafeAreaView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { useRegisterStyles } from './register.styles';
 
@@ -48,52 +47,60 @@ export default function RegisterPage() {
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Text style={styles.backButtonText}>‹ Back</Text>
       </TouchableOpacity>
-      <KeyboardAvoidingView
+      {/* <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      > */}
+      <ScrollView
+        automaticallyAdjustKeyboardInsets
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.container}
       >
-      <Text style={styles.title}>Create account</Text>
-      <Text style={styles.subtitle}>Sign up to start tracking restaurants</Text>
+        <Text style={styles.title}>Create account</Text>
+        <Text style={styles.subtitle}>Sign up to start tracking restaurants</Text>
 
-      {error && <Text style={styles.errorText}>{error}</Text>}
+        {error && <Text style={styles.errorText}>{error}</Text>}
 
-      <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        placeholder="you@example.com"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        autoComplete="email"
-        autoCorrect={false}
-      />
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="you@example.com"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          autoComplete="email"
+          autoCorrect={false}
+          textContentType="none"
+        />
 
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        placeholder="Password"
-        secureTextEntry
-        autoComplete="new-password"
-      />
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Password"
+          secureTextEntry
+          autoComplete="new-password"
+          textContentType="none"
+        />
 
-      <TouchableOpacity
-        style={[styles.button, loading && styles.buttonDisabled]}
-        onPress={handleRegister}
-        disabled={loading}
-      >
-        <Text style={styles.buttonText}>{loading ? 'Creating account...' : 'Register'}</Text>
-      </TouchableOpacity>
-
-      <View style={styles.switchRow}>
-        <Text style={styles.switchText}>Already have an account? </Text>
-        <TouchableOpacity onPress={() => router.replace('/login')}>
-          <Text style={styles.switchLink}>Log In</Text>
+        <TouchableOpacity
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleRegister}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>{loading ? 'Creating account...' : 'Register'}</Text>
         </TouchableOpacity>
-      </View>
-    </KeyboardAvoidingView>
+
+        <View style={styles.switchRow}>
+          <Text style={styles.switchText}>Already have an account? </Text>
+          <TouchableOpacity onPress={() => router.replace('/login')}>
+            <Text style={styles.switchLink}>Log In</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView> 
+      {/* </KeyboardAvoidingView> */}
     </SafeAreaView>
   );
 }

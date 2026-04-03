@@ -51,6 +51,9 @@ export const useRegisterStyles = () => {
       color: colors.text,
       marginBottom: 18,
     },
+    inputFocused: {
+      borderColor: colors.accent,
+    },
     button: {
       paddingVertical: 15,
       borderRadius: 10,
