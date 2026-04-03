@@ -1,9 +1,9 @@
 import { setOnUnauthenticated } from '@/api/client';
 import { AuthResponse } from '@/api/dtos/auth/auth-response';
-import { checkHealth } from '@/api/health/check-health';
 import { User } from '@/api/models/user';
 import { useLoginMutation } from '@/hooks/mutations/use-login-mutation';
 import { useRegisterMutation } from '@/hooks/mutations/use-register-mutation';
+import { useHealthQuery } from '@/hooks/queries/use-health-query';
 import { useMeQuery } from '@/hooks/queries/use-me-query';
 import { setAccessToken } from '@/services/access-token-store';
 import { deleteRefreshToken, getRefreshToken, setRefreshToken } from '@/services/refresh-token-storage';
@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isMountedRef = useRef(true);
 
   const { refetch: refetchMe } = useMeQuery(false);
+  const { refetch: refetchHealth } = useHealthQuery(false);
 
   const loginMutation = useLoginMutation();
   const registerMutation = useRegisterMutation();
@@ -74,7 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (isMountedRef.current) setStatus('unauthenticated');
 
       // wake up server in case of inactivity
-      checkHealth().catch(() => {});
+      refetchHealth().catch(() => {});
       return;
     }
 
@@ -124,6 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const data = await loginMutation.mutateAsync({ email, password });
     setAccessToken(data.accessToken);
     await setRefreshToken(data.refreshToken);
+    //TODO potential error not awaiting?
     void fetchAndSetUser();
   };
 
