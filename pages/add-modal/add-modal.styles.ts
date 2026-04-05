@@ -1,7 +1,5 @@
 import { useTheme } from '@/hooks/use-theme';
-import { Dimensions, StyleSheet } from 'react-native';
-
-const SCREEN_HEIGHT = Dimensions.get('window').height;
+import { StyleSheet } from 'react-native';
 
 export const useAddModalStyles = () => {
   const { colors } = useTheme();
@@ -18,7 +16,6 @@ export const useAddModalStyles = () => {
       ...StyleSheet.absoluteFillObject,
     },
     modal: {
-      maxHeight: SCREEN_HEIGHT / 3,
       backgroundColor: colors.surface,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,

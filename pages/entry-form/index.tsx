@@ -4,23 +4,25 @@ import { EntryStatus, RestaurantEntry } from '@/api/models/restaurant-entry';
 import { useCreateRestaurantEntryMutation } from '@/hooks/mutations/use-create-restaurant-entry-mutation';
 import { useDeleteRestaurantEntryMutation } from '@/hooks/mutations/use-delete-restaurant-entry-mutation';
 import { useUpdateRestaurantEntryMutation } from '@/hooks/mutations/use-update-restaurant-entry-mutation';
+import { useResolvePlaceQuery } from '@/hooks/queries/use-resolve-place-query';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
-    Alert,
-    SafeAreaView,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useEntryFormStyles } from './entry-form.styles';
 
 export default function EntryFormPage() {
   const router = useRouter();
   const styles = useEntryFormStyles();
-  const params = useLocalSearchParams<{ entry?: string }>();
+  const params = useLocalSearchParams<{ entry?: string; placeId?: string; sessionToken?: string; defaultStatus?: string }>();
 
   const existing: RestaurantEntry | null = useMemo(() => {
     if (params.entry) {
@@ -35,15 +37,33 @@ export default function EntryFormPage() {
 
   const isEditing = existing !== null;
 
+  // Resolve place details when navigating from search
+  const { data: resolvedPlace, isFetching: isResolving } = useResolvePlaceQuery({
+    placeId: params.placeId ?? '',
+    sessionToken: params.sessionToken ?? '',
+  });
+
   const [name, setName] = useState(existing?.restaurantName ?? '');
   const [address, setAddress] = useState(existing?.restaurantAddress ?? '');
-  const [status, setStatus] = useState<EntryStatus>(existing?.status ?? EntryStatus.Visited);
+  const [googlePlaceId, setGooglePlaceId] = useState(params.placeId ?? '');
+  const [status, setStatus] = useState<EntryStatus>(
+    existing?.status ?? (params.defaultStatus !== undefined ? Number(params.defaultStatus) as EntryStatus : EntryStatus.Visited)
+  );
   const [rating, setRating] = useState(existing?.rating != null ? existing.rating.toString() : '');
   const [visitedAt, setVisitedAt] = useState(
     existing?.visitedAt ? new Date(existing.visitedAt).toISOString().split('T')[0] : ''
   );
   const [notes, setNotes] = useState(existing?.notes ?? '');
   const [error, setError] = useState<string | null>(null);
+
+  // Populate name/address once the place resolves
+  useEffect(() => {
+    if (resolvedPlace) {
+      setName(resolvedPlace.name);
+      setAddress(resolvedPlace.formattedAddress);
+      setGooglePlaceId(resolvedPlace.placeId);
+    }
+  }, [resolvedPlace]);
 
   const createMutation = useCreateRestaurantEntryMutation();
   const updateMutation = useUpdateRestaurantEntryMutation();
@@ -87,7 +107,7 @@ export default function EntryFormPage() {
         const request: CreateRestaurantEntryRequest = {
           restaurantName: name.trim(),
           restaurantAddress: address.trim(),
-          googlePlaceId: '',
+          googlePlaceId: googlePlaceId,
           status,
           rating: status === EntryStatus.Visited ? parsedRating : null,
           visitedAt: status === EntryStatus.Visited ? parsedVisitedAt : null,
@@ -146,23 +166,31 @@ export default function EntryFormPage() {
       >
         {/* Restaurant Name */}
         <Text style={styles.label}>Restaurant Name *</Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Restaurant name"
-          autoCorrect={false}
-        />
+        <View>
+          <TextInput
+            style={[styles.input, isResolving && styles.inputDisabled]}
+            value={isResolving ? '' : name}
+            onChangeText={setName}
+            placeholder={isResolving ? 'Loading...' : 'Restaurant name'}
+            autoCorrect={false}
+            editable={!isResolving}
+          />
+          {isResolving && <ActivityIndicator style={styles.inputSpinner} size="small" />}
+        </View>
 
         {/* Address */}
         <Text style={styles.label}>Address</Text>
-        <TextInput
-          style={styles.input}
-          value={address}
-          onChangeText={setAddress}
-          placeholder="Address"
-          autoCorrect={false}
-        />
+        <View>
+          <TextInput
+            style={[styles.input, isResolving && styles.inputDisabled]}
+            value={isResolving ? '' : address}
+            onChangeText={setAddress}
+            placeholder={isResolving ? 'Loading...' : 'Address'}
+            autoCorrect={false}
+            editable={!isResolving}
+          />
+          {isResolving && <ActivityIndicator style={styles.inputSpinner} size="small" />}
+        </View>
 
         {/* Status toggle */}
         <Text style={styles.label}>Status *</Text>

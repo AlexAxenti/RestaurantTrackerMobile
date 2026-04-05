@@ -63,6 +63,16 @@ export const useEntryFormStyles = () => {
       fontSize: 16,
       color: colors.text,
     },
+    inputDisabled: {
+      opacity: 0.5,
+    },
+    inputSpinner: {
+      position: 'absolute',
+      right: 12,
+      top: 0,
+      bottom: 0,
+      justifyContent: 'center',
+    },
     notesInput: {
       minHeight: 80,
       textAlignVertical: 'top',
