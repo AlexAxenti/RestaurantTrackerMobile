@@ -16,9 +16,11 @@ import { usePlaceSearchBarStyles } from './place-search-bar.styles';
 interface PlaceSearchBarProps {
   sessionToken: string;
   onSelect: (place: AutocompletePlaceDto) => void;
+  latitude: number | null;
+  longitude: number | null;
 }
 
-export function PlaceSearchBar({ sessionToken, onSelect }: PlaceSearchBarProps) {
+export function PlaceSearchBar({ sessionToken, onSelect, latitude, longitude }: PlaceSearchBarProps) {
   const { colors } = useTheme();
   const styles = usePlaceSearchBarStyles();
 
@@ -28,6 +30,8 @@ export function PlaceSearchBar({ sessionToken, onSelect }: PlaceSearchBarProps) 
   const { data, isFetching } = useAutocompletePlacesQuery({
     input: debouncedQuery,
     sessionToken,
+    latitude,
+    longitude,
   });
 
   console.log('Autocomplete query:', debouncedQuery, 'Results:', data?.places);

@@ -1,4 +1,5 @@
 import { AutocompletePlaceDto } from '@/api/dtos/places/autocomplete-places-response';
+import { useLocation } from '@/hooks/use-location';
 import { BlurView } from 'expo-blur';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useMemo } from 'react';
@@ -23,6 +24,7 @@ export default function AddModalPage() {
 
   // Token lives as long as this modal is mounted
   const sessionToken = useMemo(() => generateSessionToken(), []);
+  const { latitude, longitude } = useLocation();
 
   const handleSelect = useCallback(
     (place: AutocompletePlaceDto) => {
@@ -53,7 +55,7 @@ export default function AddModalPage() {
       </Pressable>
       <View style={styles.modal}>
 
-        <PlaceSearchBar sessionToken={sessionToken} onSelect={handleSelect} />
+        <PlaceSearchBar sessionToken={sessionToken} onSelect={handleSelect} latitude={latitude} longitude={longitude} />
 
         <View style={styles.dividerRow}>
           <View style={styles.divider} />

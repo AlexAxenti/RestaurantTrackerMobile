@@ -40,7 +40,13 @@
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow BiteStash to use your location to find nearby restaurants."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
