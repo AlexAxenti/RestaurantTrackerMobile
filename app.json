@@ -2,13 +2,14 @@
   "expo": {
     "name": "BiteStash",
     "slug": "bite-stash",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/bite_stash_icon.png",
     "scheme": "bitestash",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "buildNumber": "2",
       "supportsTablet": true,
       "bundleIdentifier": "com.axenti.bitestash",
       "infoPlist": {
